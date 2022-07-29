@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "../../services";
 
@@ -6,14 +7,12 @@ import { Auth } from "../../services";
 const Logout: React.FC = () => {
 
     const navigate = useNavigate()
-
-    const sair = () => {
+    const logout = () => {
         Auth.logout()
         navigate('/')
     }
-
     return (
-        <button onClick={sair}>SAIR</button>
+        <Button variant="danger" onClick={logout}>Logout</Button>
     )
 }
 

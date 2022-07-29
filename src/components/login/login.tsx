@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button, Spinner } from "react-bootstrap";
+import { Form, Button, Spinner, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Register } from '../../components/index'
 import { Auth } from "../../services";
@@ -10,27 +10,49 @@ const Login: React.FC = () => {
     const navigate = useNavigate()
 
     const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-
+    const [password, setPassword] = useState('');
+    const [failLogin, setFailLogin] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
             setLoading(true)
-            const user = await Auth.login(email, senha)
-            if (user) {
+            const user = await Auth.login(email, password)
+            if (user.status < 400) {
                 setLoading(false)
                 navigate('/home')
+            } else {
+                setFailLogin(true);
+                setLoading(false);
             }
         } catch (e: any) {
+            setFailLogin(true);
             setLoading(false)
-            alert(`Dados inválidos.\nErro: ${e.name}`)
         }
+    }
+
+    const handleFail = () => {
+        setFailLogin(false);
+        setEmail("");
+        setPassword("");
     }
 
     return (
         <div className="form-container">
+            {
+                failLogin &&
+                <Alert variant="danger">
+                    <Alert.Heading>Algo deu errado!</Alert.Heading>
+                    <hr />
+                    <p>
+                        Email ou password inválidos
+                    </p>
+                    <Button variant="danger" onClick={handleFail}>
+                        Tentar Novamente
+                    </Button>
+                </Alert>
+            }
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email</Form.Label>
@@ -38,8 +60,8 @@ const Login: React.FC = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Senha</Form.Label>
-                    <Form.Control type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+                    <Form.Label>password</Form.Label>
+                    <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </Form.Group>
                 <Form.Group className="form-container-register">
                     <Form.Text>

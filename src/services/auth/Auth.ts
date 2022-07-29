@@ -5,28 +5,26 @@ class Auth {
 
     async login(email: string, password: string){
         try{
-            const response = await axios.post("http://localhost:3000/api/user/signin",{
+            const response = await axios.post(config.baseUrlLocal.concat(config.user, config.signin),{
                 email,
                 password
             });
 
             if(response.data.JWTtoken){
-                localStorage.setItem("user", JSON.stringify(response.data));
-                return Promise.resolve(response.data);
-            } else {
-                return Promise.reject(response.data.error)
+                localStorage.setItem("JWT_token", JSON.stringify(response.data.JWTtoken));
             }
-        } catch(e) {
+            return response;
+        } catch(e: any) {
             return e;
         }
     }
 
     logout(){
-        localStorage.removeItem("user");
+        localStorage.removeItem("JWT_token");
     }
 
     getCurrentUser(){
-        const user = localStorage.getItem("user");
+        const user = localStorage.getItem("JWT_token");
         if(user){
             return JSON.parse(user)
          } 
